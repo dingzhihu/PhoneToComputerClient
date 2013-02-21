@@ -1,0 +1,6 @@
+.idea
+*.iml
+gen/
+local.properties
+build.xml
+out

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PhoneToComputer</string>
+    <string name="go">Upload</string>
+    <string name="text">Text:  </string>
+    <string name="img">Img:   </string>
+    <string name="text_hint">Paste text</string>
+    <string name="img_hint">Select Img</string>
+</resources>
