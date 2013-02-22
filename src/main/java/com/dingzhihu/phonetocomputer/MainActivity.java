@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -89,6 +91,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void upload() {
 
         if (TextUtils.isEmpty(mText.getText()) && TextUtils.isEmpty(mImgPath)) {
+            Crouton.makeText(this, "No text or image found", Style.ALERT).show();
             return;
         }
 
@@ -119,5 +122,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         return cursor.getString(index);
     }
 
-
+    @Override
+    protected void onDestroy() {
+        Crouton.clearCroutonsForActivity(this);
+        super.onDestroy();
+    }
 }
