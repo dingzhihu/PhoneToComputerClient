@@ -2,11 +2,16 @@ package com.dingzhihu.phonetocomputer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +19,8 @@ import android.widget.EditText;
 public class MainActivity extends Activity implements View.OnClickListener {
 
     private static final int SELECT_IMG = 1;
+    private static final String KEY_PREF_HOST = "pref_host";
+
     private String mImgPath;
     private EditText mText;
     private Button mImg;
@@ -56,6 +63,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void selectImg() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -64,9 +87,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void upload() {
+
         if (TextUtils.isEmpty(mText.getText()) && TextUtils.isEmpty(mImgPath)) {
             return;
         }
+
+
 
         if (!TextUtils.isEmpty(mText.getText())) {
 
@@ -76,6 +102,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         }
 
+    }
+
+    private String getHost() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        return pref.getString(KEY_PREF_HOST, getString(R.string.default_host));
     }
 
     private String parseImgPath(Uri uri) {
