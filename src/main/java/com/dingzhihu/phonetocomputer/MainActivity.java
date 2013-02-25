@@ -16,13 +16,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
     private static final int SELECT_IMG = 1;
     private static final String KEY_PREF_HOST = "pref_host";
-
     private String mImgPath;
     private EditText mText;
     private Button mImg;
@@ -91,10 +89,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void upload() {
 
         if (TextUtils.isEmpty(mText.getText()) && TextUtils.isEmpty(mImgPath)) {
-            Utils.alert(this,"No text or image found");
+            Utils.alert(this, "No text or image found");
             return;
         }
-
 
 
         if (!TextUtils.isEmpty(mText.getText())) {

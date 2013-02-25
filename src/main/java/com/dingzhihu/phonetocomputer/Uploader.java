@@ -8,18 +8,51 @@ import java.util.UUID;
 
 
 public final class Uploader {
-    private static final String UPLOAD_URL = "http://10.0.2.1:4567/upload";
     private static final int TIME_OUT = 10 * 1000;   //超时时间
     private static final String CHARSET = "utf-8"; //设置编码
 
-    public static String uploadFile(File file) {
+    public static String uploadText(final String host, final String text) {
+        final String path = "/uploadtext";
+        final String spec = host + path;
+        String result = null;
+
+        HttpURLConnection connection = null;
+
+        try {
+
+            URL url = new URL(spec);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+
+            final String content = "text=" + text;
+            OutputStream os = connection.getOutputStream();
+            os.write(content.getBytes());
+            os.flush();
+            os.close();
+            result = connection.getResponseMessage();
+        } catch (MalformedURLException e) {
+            result = e.getMessage();
+            e.printStackTrace();
+        } catch (IOException e) {
+            result = e.getMessage();
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public static String uploadFile(final String host, final File file) {
+        final String path = "/uploadfile";
+        final String spec = host + path;
+
         String result = null;
         String BOUNDARY = UUID.randomUUID().toString();  //边界标识   随机生成
         String PREFIX = "--", LINE_END = "\r\n";
         String CONTENT_TYPE = "multipart/form-data";   //内容类型
 
         try {
-            URL url = new URL(UPLOAD_URL);
+            URL url = new URL(spec);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(TIME_OUT);
             conn.setConnectTimeout(TIME_OUT);
@@ -65,35 +98,28 @@ public final class Uploader {
                  * 获取响应码  200=成功
                  * 当响应成功，获取响应的流
                  */
+
                 int res = conn.getResponseCode();
-//                if(res==200)
-//                {
-                InputStream input = conn.getInputStream();
-                StringBuffer sb1 = new StringBuffer();
-                int ss;
-                while ((ss = input.read()) != -1) {
-                    sb1.append((char) ss);
-                }
-                result = sb1.toString();
-//                }
-//                else{
-//                    Log.e(TAG, "request error");
-//                }
-                System.out.println("result:" + result);
+                result = conn.getResponseMessage();
             }
         } catch (MalformedURLException e) {
+            result = e.getMessage();
             e.printStackTrace();
         } catch (IOException e) {
+            result = e.getMessage();
             e.printStackTrace();
         }
         return result;
     }
 
-    public void test() {
-        File f = new File("/sdcard/DCIM/Camera/IMG_20130221_091308.jpg");
-        System.out.println(f.exists());
+    private static String toString(InputStream inputStream) throws IOException {
+        StringBuffer result = new StringBuffer();
+        int chr;
+        while ((chr = inputStream.read()) != -1) {
+            result.append((char) chr);
+        }
+        return result.toString();
 
-        uploadFile(f);
     }
 
 
