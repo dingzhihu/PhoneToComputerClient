@@ -91,7 +91,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void upload() {
 
         if (TextUtils.isEmpty(mText.getText()) && TextUtils.isEmpty(mImgPath)) {
-            Crouton.makeText(this, "No text or image found", Style.ALERT).show();
+            Utils.alert(this,"No text or image found");
             return;
         }
 
