@@ -81,6 +81,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
+
+        if (item.getItemId() == R.id.menu_clear) {
+            mText.setText("");
+            mImg.setText("");
+            mImgPath = null;
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
