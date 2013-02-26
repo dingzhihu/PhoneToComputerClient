@@ -13,6 +13,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
  */
 public final class Utils {
 
+
     public static void confirm(Activity activity, CharSequence text) {
         Crouton.makeText(activity, text, buildStyle(0xff99cc00)).show();
     }

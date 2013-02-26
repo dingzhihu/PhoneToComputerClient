@@ -1,10 +1,12 @@
 package com.dingzhihu.phonetocomputer;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -17,6 +19,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
+import java.io.File;
+
 public class MainActivity extends Activity implements View.OnClickListener {
 
     private static final int SELECT_IMG = 1;
@@ -24,6 +28,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private String mImgPath;
     private EditText mText;
     private Button mImg;
+    private ProgressDialog mProgressDialog;
 
     /**
      * Called when the activity is first created.
@@ -93,14 +98,34 @@ public class MainActivity extends Activity implements View.OnClickListener {
             return;
         }
 
+        if (getString(R.string.default_host).equals(getHost())) {
+            Utils.alert(this, "Host ip not set");
+            return;
+        }
+
 
         if (!TextUtils.isEmpty(mText.getText())) {
+            uploadText();
+            return;
 
         }
 
         if (!TextUtils.isEmpty(mImgPath)) {
+            uploadFile();
 
         }
+
+    }
+
+    private void uploadText() {
+        final boolean isFile = false;
+        new UploadTask(mText.getText().toString(), isFile).execute();
+
+    }
+
+    private void uploadFile() {
+        final boolean isFile = true;
+        new UploadTask(mImgPath, isFile).execute();
 
     }
 
@@ -124,4 +149,61 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Crouton.clearCroutonsForActivity(this);
         super.onDestroy();
     }
+
+    private void showProgressDialog() {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setMessage("Uploading");
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.show();
+
+    }
+
+    private void hideProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+    private class UploadTask extends AsyncTask<Void, Void, String> {
+        private String mTextOrPath;
+        private boolean mIsFile;
+        private String mHost;
+
+        public UploadTask(String textOrPath, boolean isFile) {
+            mTextOrPath = textOrPath;
+            mIsFile = isFile;
+            mHost = "http://" + getHost() + ":4567";
+
+            System.out.println(String.format("textOrPath:%s,host:%s", mTextOrPath, mHost));
+
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            if (mIsFile) {
+                File file = new File(mTextOrPath);
+                return Uploader.uploadFile(mHost, file);
+            } else {
+                return Uploader.uploadText(mHost, mTextOrPath);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressDialog();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            hideProgressDialog();
+            Utils.info(MainActivity.this, s);
+
+        }
+    }
+
+
 }
